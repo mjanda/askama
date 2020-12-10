@@ -6,7 +6,7 @@ extern crate rocket;
 use askama::Template;
 
 use rocket::http::{ContentType, Status};
-use rocket::local::Client;
+use rocket::local::blocking::Client;
 
 #[derive(Template)]
 #[template(path = "hello.html")]
@@ -23,8 +23,8 @@ fn hello() -> HelloTemplate<'static> {
 fn test_rocket() {
     let rocket = rocket::ignite().mount("/", routes![hello]);
     let client = Client::new(rocket).unwrap();
-    let mut rsp = client.get("/").dispatch();
+    let rsp = client.get("/").dispatch();
     assert_eq!(rsp.status(), Status::Ok);
     assert_eq!(rsp.content_type(), Some(ContentType::HTML));
-    assert_eq!(rsp.body_string().unwrap(), "Hello, world!");
+    assert_eq!(rsp.into_string().unwrap(), "Hello, world!");
 }
