@@ -26,7 +26,9 @@
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
+        
         <link rel="stylesheet" href="css/print.css" media="print">
+        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
@@ -128,9 +130,11 @@
                     <h1 class="menu-title">Askama</h1>
 
                     <div class="right-buttons">
+                        
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        
                         
                     </div>
                 </div>
@@ -172,8 +176,8 @@ field from the template context.</p>
 <p>Inside code blocks, you can also declare variables or assign values
 to variables.
 Assignments can't be imported by other templates.</p>
-<p>Assignments use the let tag:</p>
-<pre><code class="language-text">{% let name = user.name %}
+<p>Assignments use the <code>let</code> tag:</p>
+<pre><code class="language-jinja">{% let name = user.name %}
 {% let len = name.len() %}
 
 {% let val -%}
@@ -184,6 +188,14 @@ Assignments can't be imported by other templates.</p>
 {% endif -%}
 {{ val }}
 </code></pre>
+<p>Like Rust, Askama also supports shadowing variables.</p>
+<pre><code class="language-jinja">{% let foo = &quot;bar&quot; %}
+{{ foo }}
+
+{% let foo = &quot;baz&quot; %}
+{{ foo }}
+</code></pre>
+<p>For compatibility with Jinja, <code>set</code> can be used in place of <code>let</code>.</p>
 <h2><a class="header" href="#filters" id="filters">Filters</a></h2>
 <p>Values such as those obtained from variables can be post-processed
 using <strong>filters</strong>.
@@ -414,11 +426,17 @@ assert_eq!(t.render().unwrap(), &quot;Section 1: A=a\nB=b&quot;)
 <span class="boring">}
 </span></code></pre></pre>
 <p>See the example
-<a href="https://github.com/djc/askama/blob/master/testing/tests/render_in_place.rs">render in place</a>
+<a href="https://github.com/djc/askama/blob/main/testing/tests/render_in_place.rs">render in place</a>
 using a vector of templates in a for block.</p>
 <h2><a class="header" href="#comments" id="comments">Comments</a></h2>
 <p>Askama supports block comments delimited by <code>{#</code> and <code>#}</code>.</p>
-<pre><code>{# A Comment #}
+<pre><code class="language-jinja">{# A Comment #}
+</code></pre>
+<p>Like Rust, Askama also supports nested block comments.</p>
+<pre><code class="language-jinja">{#
+A Comment
+{# A nested comment #}
+#}
 </code></pre>
 <h2><a class="header" href="#recursive-structures" id="recursive-structures">Recursive Structures</a></h2>
 <p>Recursive implementations should preferably use a custom iterator and

@@ -28,7 +28,9 @@
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
+        
         <link rel="stylesheet" href="css/print.css" media="print">
+        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
@@ -130,9 +132,11 @@
                     <h1 class="menu-title">Askama</h1>
 
                     <div class="right-buttons">
+                        
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        
                         
                     </div>
                 </div>
@@ -170,13 +174,10 @@
 It generates Rust code from your templates at compile time
 based on a user-defined <code>struct</code> to hold the template's context.
 See below for an example, or read <a href="https://djc.github.io/askama/">the book</a>.</p>
-<p><strong>&quot;I use Askama for actix's TechEmpower benchmarks.&quot;</strong> --
-<a href="https://github.com/fafhrd91">Nikolay Kim</a>, creator of actix-web</p>
 <p><strong>&quot;Pretty exciting. I would love to use this already.&quot;</strong> --
 <a href="http://lucumr.pocoo.org/">Armin Ronacher</a>, creator of Jinja</p>
 <p>All feedback welcome. Feel free to file bugs, requests for documentation and
-any other feedback to the <a href="https://github.com/djc/askama/issues">issue tracker</a> or <a href="https://twitter.com/djco/">tweet me</a>.
-Many thanks to <a href="https://github.com/dtolnay">David Tolnay</a> for his support in improving Askama.</p>
+any other feedback to the <a href="https://github.com/djc/askama/issues">issue tracker</a> or <a href="https://twitter.com/djco/">tweet me</a>.</p>
 <p>Askama was created by and is maintained by Dirkjan Ochtman. If you are in a
 position to support ongoing maintenance and further development or use it
 in a for-profit context, please consider supporting my open source work on
@@ -184,8 +185,8 @@ in a for-profit context, please consider supporting my open source work on
 <h3><a class="header" href="#feature-highlights" id="feature-highlights">Feature highlights</a></h3>
 <ul>
 <li>Construct templates using a familiar, easy-to-use syntax</li>
-<li>Template code is compiled into your crate for <a href="https://github.com/djc/template-benchmarks-rs">optimal performance</a></li>
 <li>Benefit from the safety provided by Rust's type system</li>
+<li>Template code is compiled into your crate for <a href="https://github.com/djc/template-benchmarks-rs">optimal performance</a></li>
 <li>Optional built-in support for Actix, Gotham, Iron, Rocket and warp web frameworks</li>
 <li>Debugging features to assist you in template development</li>
 <li>Templates must be valid UTF-8 and produce UTF-8 when rendered</li>
@@ -464,8 +465,8 @@ field from the template context.</p>
 <p>Inside code blocks, you can also declare variables or assign values
 to variables.
 Assignments can't be imported by other templates.</p>
-<p>Assignments use the let tag:</p>
-<pre><code class="language-text">{% let name = user.name %}
+<p>Assignments use the <code>let</code> tag:</p>
+<pre><code class="language-jinja">{% let name = user.name %}
 {% let len = name.len() %}
 
 {% let val -%}
@@ -476,6 +477,14 @@ Assignments can't be imported by other templates.</p>
 {% endif -%}
 {{ val }}
 </code></pre>
+<p>Like Rust, Askama also supports shadowing variables.</p>
+<pre><code class="language-jinja">{% let foo = &quot;bar&quot; %}
+{{ foo }}
+
+{% let foo = &quot;baz&quot; %}
+{{ foo }}
+</code></pre>
+<p>For compatibility with Jinja, <code>set</code> can be used in place of <code>let</code>.</p>
 <h2><a class="header" href="#filters" id="filters">Filters</a></h2>
 <p>Values such as those obtained from variables can be post-processed
 using <strong>filters</strong>.
@@ -706,11 +715,17 @@ assert_eq!(t.render().unwrap(), &quot;Section 1: A=a\nB=b&quot;)
 <span class="boring">}
 </span></code></pre></pre>
 <p>See the example
-<a href="https://github.com/djc/askama/blob/master/testing/tests/render_in_place.rs">render in place</a>
+<a href="https://github.com/djc/askama/blob/main/testing/tests/render_in_place.rs">render in place</a>
 using a vector of templates in a for block.</p>
 <h2><a class="header" href="#comments" id="comments">Comments</a></h2>
 <p>Askama supports block comments delimited by <code>{#</code> and <code>#}</code>.</p>
-<pre><code>{# A Comment #}
+<pre><code class="language-jinja">{# A Comment #}
+</code></pre>
+<p>Like Rust, Askama also supports nested block comments.</p>
+<pre><code class="language-jinja">{#
+A Comment
+{# A nested comment #}
+#}
 </code></pre>
 <h2><a class="header" href="#recursive-structures" id="recursive-structures">Recursive Structures</a></h2>
 <p>Recursive implementations should preferably use a custom iterator and
@@ -759,6 +774,13 @@ is passed to the next.</p>
 <p>Askama has a collection of built-in filters, documented below, but can also include custom filters. Additionally, the <code>json</code> and <code>yaml</code> filters are included in the built-in filters,
 but are disabled by default. Enable them with Cargo features (see below for more information).</p>
 <h2><a class="header" href="#built-in-filters" id="built-in-filters">Built-In Filters</a></h2>
+<h3><a class="header" href="#abs" id="abs">abs</a></h3>
+<p>Returns the absolute value.</p>
+<pre><code>{{ -2|abs }}
+</code></pre>
+<p>Output:</p>
+<pre><code>2
+</code></pre>
 <h3><a class="header" href="#capitalize" id="capitalize">capitalize</a></h3>
 <p>Capitalize a value. The first character will be uppercase, all others lowercase:</p>
 <pre><code>{{ &quot;hello&quot;|capitalize }}
@@ -774,7 +796,7 @@ but are disabled by default. Enable them with Cargo features (see below for more
 <pre><code>-  a  -
 </code></pre>
 <h3><a class="header" href="#escape--e" id="escape--e">escape | e</a></h3>
-<p>Escapes html characters in strings:</p>
+<p>Escapes HTML characters in strings:</p>
 <pre><code>{{ &quot;Escape &lt;&gt;&amp;&quot;|e }}
 </code></pre>
 <p>Output:</p>
@@ -788,13 +810,13 @@ but are disabled by default. Enable them with Cargo features (see below for more
 <pre><code>1 KB
 </code></pre>
 <h3><a class="header" href="#format" id="format">format</a></h3>
-<p>Formats arguments according to the specified format</p>
+<p>Formats arguments according to the specified format.</p>
 <p>The first argument to this filter must be a string literal (as in normal Rust).</p>
-<p>All arguments are passed through to the format!() macro by the Askama code generator.</p>
+<p>All arguments are passed through to the <code>format!()</code> macro by the Askama code generator.</p>
 <pre><code>{{ &quot;{:?}&quot;|format(var) }}
 </code></pre>
 <h3><a class="header" href="#indent" id="indent">indent</a></h3>
-<p>Indent newlines with width spaces</p>
+<p>Indent newlines with width spaces.</p>
 <pre><code>{{ &quot;hello\nfoo\nbar&quot;|indent(4) }}
 </code></pre>
 <p>Output:</p>
@@ -803,7 +825,7 @@ but are disabled by default. Enable them with Cargo features (see below for more
     bar
 </code></pre>
 <h3><a class="header" href="#join" id="join">join</a></h3>
-<p>Joins iterable into a string separated by provided argument</p>
+<p>Joins iterable into a string separated by provided argument.</p>
 <pre><code>array = &amp;[&quot;foo&quot;, &quot;bar&quot;, &quot;bazz&quot;]
 </code></pre>
 <pre><code>{{ array|join(&quot;, &quot;) }}
@@ -812,59 +834,60 @@ but are disabled by default. Enable them with Cargo features (see below for more
 <pre><code>foo, bar, bazz
 </code></pre>
 <h3><a class="header" href="#linebreaks" id="linebreaks">linebreaks</a></h3>
-<p>Replaces line breaks in plain text with appropriate HTML</p>
-<p>A single newline becomes an HTML line break <br> and a new line followed by a blank line becomes a paragraph break <p>.</p>
+<p>Replaces line breaks in plain text with appropriate HTML.</p>
+<p>A single newline becomes an HTML line break <code>&lt;br&gt;</code> and a new line followed by a blank line becomes a paragraph break <code>&lt;p&gt;</code>.</p>
 <pre><code>{{ &quot;hello\nworld\n\nfrom\naskama&quot;|linebreaks }}
 </code></pre>
 <p>Output:</p>
 <pre><code>&lt;p&gt;hello&lt;br /&gt;world&lt;/p&gt;&lt;p&gt;from&lt;br /&gt;askama&lt;/p&gt;
 </code></pre>
 <h3><a class="header" href="#linebreaksbr" id="linebreaksbr">linebreaksbr</a></h3>
-<p>Converts all newlines in a piece of plain text to HTML line breaks</p>
+<p>Converts all newlines in a piece of plain text to HTML line breaks.</p>
 <pre><code>{{ &quot;hello\nworld\n\nfrom\naskama&quot;|linebreaks }}
 </code></pre>
 <p>Output:</p>
 <pre><code>hello&lt;br /&gt;world&lt;br /&gt;&lt;br /&gt;from&lt;br /&gt;askama
 </code></pre>
 <h3><a class="header" href="#lower--lowercase" id="lower--lowercase">lower | lowercase</a></h3>
-<p>Converts to lowercase</p>
+<p>Converts to lowercase.</p>
 <pre><code>{{ &quot;HELLO&quot;|lower }}
 </code></pre>
 <p>Output:</p>
 <pre><code>hello
 </code></pre>
 <h3><a class="header" href="#safe" id="safe">safe</a></h3>
-<p>Marks a string (or other Display type) as safe.  By default all strings are escaped according to the format</p>
+<p>Marks a string (or other Display type) as safe. By default all strings are escaped according to the format.</p>
 <pre><code>{{ &quot;&lt;p&gt;I'm Safe&lt;/p&gt;&quot;|safe }}
 </code></pre>
 <p>Output:</p>
 <pre><code>&lt;p&gt;I'm Safe&lt;/p&gt;
 </code></pre>
 <h3><a class="header" href="#trim" id="trim">trim</a></h3>
-<p>Strip leading and trailing whitespace</p>
+<p>Strip leading and trailing whitespace.</p>
 <pre><code>{{ &quot; hello &quot;|trim }}
 </code></pre>
 <p>Output:</p>
 <pre><code>hello
 </code></pre>
 <h3><a class="header" href="#truncate" id="truncate">truncate</a></h3>
-<p>Limit string length, appends '...' if truncated</p>
+<p>Limit string length, appends '...' if truncated.</p>
 <pre><code>{{ &quot;hello&quot;|truncate(2) }}
 </code></pre>
 <p>Output:</p>
 <pre><code>he...
 </code></pre>
 <h3><a class="header" href="#upper--uppercase" id="upper--uppercase">upper | uppercase</a></h3>
-<p>Converts to uppercase</p>
+<p>Converts to uppercase.</p>
 <pre><code>{{ &quot;hello&quot;|upper }}
 </code></pre>
 <p>Output:</p>
 <pre><code>HELLO
 </code></pre>
 <h3><a class="header" href="#wordcount" id="wordcount">wordcount</a></h3>
-<p>Count the words in that string</p>
+<p>Count the words in that string.</p>
 <pre><code>{{ &quot;askama is sort of cool&quot;|wordcount }}
 </code></pre>
+<p>Output:</p>
 <pre><code>5
 </code></pre>
 <h2><a class="header" href="#custom-filters" id="custom-filters">Custom Filters</a></h2>
@@ -888,16 +911,17 @@ fn main() {
 }
 </code></pre></pre>
 <h2><a class="header" href="#the-json-filter" id="the-json-filter">The <code>json</code> filter</a></h2>
-<p>Enabling the <code>serde-json</code> filter will enable the use of the <code>json</code> filter.
+<p>Enabling the <code>serde-json</code> feature will enable the use of the <code>json</code> filter.
 This will output formatted JSON for any value that implements the required
 <code>Serialize</code> trait.</p>
-<pre><code>{
+<pre><code class="language-jinja">{
   &quot;foo&quot;: &quot;{{ foo }}&quot;,
   &quot;bar&quot;: {{ bar|json }}
 }
 </code></pre>
+<p>For compatibility with Jinja, <code>tojson</code> can be used in place of <code>json</code>.</p>
 <h2><a class="header" href="#the-yaml-filter" id="the-yaml-filter">The <code>yaml</code> filter</a></h2>
-<p>Enabling the <code>serde-yaml</code> filter will enable the use of the <code>yaml</code> filter.
+<p>Enabling the <code>serde-yaml</code> feature will enable the use of the <code>yaml</code> filter.
 This will output formatted JSON for any value that implements the required
 <code>Serialize</code> trait.</p>
 <pre><code>{{ foo|yaml }}
@@ -907,7 +931,7 @@ This will output formatted JSON for any value that implements the required
 <p>Enabling the <code>with-rocket</code> feature appends an implementation of Rocket's
 <code>Responder</code> trait for each template type. This makes it easy to trivially
 return a value of that type in a Rocket handler. See
-<a href="https://github.com/djc/askama/blob/master/askama_rocket/tests/basic.rs">the example</a>
+<a href="https://github.com/djc/askama/blob/main/askama_rocket/tests/basic.rs">the example</a>
 from the Askama test suite for more on how to integrate.</p>
 <p>In case a run-time error occurs during templating, a <code>500 Internal Server Error</code> <code>Status</code> value will be returned, so that this can be further
 handled by your error catcher.</p>
@@ -915,7 +939,7 @@ handled by your error catcher.</p>
 <p>Enabling the <code>with-iron</code> feature appends an implementation of Iron's
 <code>Modifier&lt;Response&gt;</code> trait for each template type. This makes it easy to
 trivially return a value of that type in an Iron handler. See
-<a href="https://github.com/djc/askama/blob/master/askama_iron/tests/basic.rs">the example</a>
+<a href="https://github.com/djc/askama/blob/main/askama_iron/tests/basic.rs">the example</a>
 from the Askama test suite for more on how to integrate.</p>
 <p>Note that Askama's generated <code>Modifier&lt;Response&gt;</code> implementation currently
 unwraps any run-time errors from the template. If you have a better
@@ -924,13 +948,13 @@ suggestion, please <a href="https://github.com/djc/askama/issues/new">file an is
 <p>Enabling the <code>with-actix-web</code> feature appends an implementation of Actix-web's
 <code>Responder</code> trait for each template type. This makes it easy to trivially return
 a value of that type in an Actix-web handler. See
-<a href="https://github.com/djc/askama/blob/master/askama_actix/tests/basic.rs">the example</a>
+<a href="https://github.com/djc/askama/blob/main/askama_actix/tests/basic.rs">the example</a>
 from the Askama test suite for more on how to integrate.</p>
 <h2><a class="header" href="#gotham-integration" id="gotham-integration">Gotham integration</a></h2>
 <p>Enabling the <code>with-gotham</code> feature appends an implementation of Gotham's
 <code>IntoResponse</code> trait for each template type. This makes it easy to trivially
 return a value of that type in a Gotham handler. See
-<a href="https://github.com/djc/askama/blob/master/askama_gotham/tests/basic.rs">the example</a>
+<a href="https://github.com/djc/askama/blob/main/askama_gotham/tests/basic.rs">the example</a>
 from the Askama test suite for more on how to integrate.</p>
 <p>In case of a run-time error occurring during templating, the response will be of the same
 signature, with a status code of <code>500 Internal Server Error</code>, mime <code>*/*</code>, and an empty <code>Body</code>.
@@ -938,14 +962,14 @@ This preserves the response chain if any custom error handling needs to occur.</
 <h2><a class="header" href="#warp-integration" id="warp-integration">Warp integration</a></h2>
 <p>Enabling the <code>with-warp</code> feature appends an implementation of Warp's <code>Reply</code>
 trait for each template type. This makes it simple to return a template from
-a Warp filter. See <a href="https://github.com/djc/askama/blob/master/askama_warp/tests/warp.rs">the example</a>
+a Warp filter. See <a href="https://github.com/djc/askama/blob/main/askama_warp/tests/warp.rs">the example</a>
 from the Askama test suite for more on how to integrate.</p>
 <h2><a class="header" href="#tide-integration" id="tide-integration">Tide integration</a></h2>
 <p>Enabling the <code>with-tide</code> feature appends <code>Into&lt;tide::Response&gt;</code> and
 <code>TryInto&lt;tide::Body&gt;</code> implementations for each template type. This
 provides the ability for tide apps to build a response directly from
 a template, or to append a templated body to an existing
-<code>Response</code>. See <a href="https://github.com/djc/askama/blob/master/askama_tide/tests/tide.rs">the example</a>
+<code>Response</code>. See <a href="https://github.com/djc/askama/blob/main/askama_tide/tests/tide.rs">the example</a>
 from the Askama test suite for more on how to integrate.</p>
 
                     </main>
